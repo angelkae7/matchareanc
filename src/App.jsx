@@ -4,7 +4,7 @@ import { useCommunes } from "./hooks/useCommunes"
 import { DropZone } from "./components/DropZone"
 import { DotLottieReact } from "@lottiefiles/dotlottie-react"
 import Stars from "./components/Stars"
-import kaguDefaite from "./assets/kagu-defaite.png"
+import kaguDefaite from "public/kagu-defaite.png"
 
 const provinceTotals = {
   "province Sud": 14,
@@ -143,7 +143,7 @@ export default function App() {
           </div>
           <div className="kagu-wrapper">
             <DotLottieReact
-              src="src/assets/kagu-hi.lottie"
+              src="public/kagu-hi.lottie"
               loop
               autoplay
               width={200}
@@ -189,7 +189,7 @@ export default function App() {
 
         <div className="mascotte-hint">
           <DotLottieReact
-            src="src/assets/kagu-hi.lottie"
+            src="public/kagu-hi.lottie"
             loop
             autoplay
             width={50}
@@ -245,7 +245,7 @@ export default function App() {
           <div className="result-body">
             <div className="mascotte-big result-mascotte">
               <DotLottieReact
-                src="src/assets/kagu-victoire.lottie"
+                src="public/kagu-victoire.lottie"
                 loop
                 autoplay
                 width={160}

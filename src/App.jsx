@@ -227,7 +227,11 @@ export default function App() {
           </div>
         </div>
 
-        {showStars && <Stars />}
+        {showStars && (
+          <div className="stars-overlay">
+            <Stars />
+          </div>
+        )}
       </div>
     )
   }

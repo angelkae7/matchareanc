@@ -22,6 +22,8 @@ export default function App() {
     "province Nord": [],
     "province des îles Loyauté": [],
   })
+
+  const [starsOrigin, setStarsOrigin] = useState(null)
   const [remaining, setRemaining] = useState([])
   const [remainingVisible, setRemainingVisible] = useState([])
   const [chrono, setChrono] = useState(60)
@@ -95,15 +97,18 @@ export default function App() {
     // Vérifier si la commune appartient à cette province
     const isCorrect = dragging.province && dragging.province[0] === province
 
+    // 2. Remplacer le bloc isCorrect dans handleDrop
     if (isCorrect) {
-      // Bonne province
+      const rect = event?.currentTarget?.getBoundingClientRect()
+      setStarsOrigin(rect ? { x: rect.left + rect.width / 2, y: rect.bottom } : null)
+
       setProvinces((prev) => ({
         ...prev,
         [province]: [dragging, ...prev[province]],
       }))
       setRemaining((prev) => prev.filter((item) => item.nom_commune !== dragging.nom_commune))
       setShowStars(true)
-      setTimeout(() => setShowStars(false), 900)
+      setTimeout(() => { setShowStars(false); setStarsOrigin(null) }, 1200)
     } else {
       // Mauvaise province
       const newLives = lives - 1
@@ -213,6 +218,8 @@ export default function App() {
           ))}
         </div>
 
+        {showStars && <Stars origin={starsOrigin} />}   
+
         <div className="commune-bank">
           <div className="bank-title">GLISSER VERS LE HAUT</div>
           <div className="bank-list">
@@ -227,11 +234,6 @@ export default function App() {
           </div>
         </div>
 
-        {showStars && (
-          <div className="stars-overlay">
-            <Stars />
-          </div>
-        )}
       </div>
     )
   }

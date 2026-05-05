@@ -1,10 +1,11 @@
 
-export function ItemCard({ item, onDragStart }) {
+export function ItemCard({ item, onDragStart, isSelected }) {
   return (
     <button
-      className="item-chip"
+      className={`item-chip${isSelected ? " selected" : ""}`}
       draggable="true"
-      onDragStart={() => onDragStart(item)}
+      onDragStart={(e) => onDragStart(item, e)}
+      onClick={() => onDragStart(item)}
     >
       {item.nom_commune}
     </button>

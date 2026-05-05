@@ -10,8 +10,15 @@ export function DropZone({ province, communes, targetCount, onDrop }) {
   return (
     <div
       className={`drop-zone ${colorClass}`}
-      onDrop={() => onDrop(province)}
+      onDrop={(e) => {
+        e.preventDefault()
+        onDrop(province, e)
+      }}
       onDragOver={(e) => e.preventDefault()}
+      onDragEnter={(e) => e.preventDefault()}
+      onPointerUp={(e) => onDrop(province, e)}
+      onTouchEnd={(e) => onDrop(province, e)}
+      onClick={() => onDrop(province)}
     >
       <div className="zone-header">
         <h3>{province.toUpperCase()}</h3>

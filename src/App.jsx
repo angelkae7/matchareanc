@@ -4,7 +4,10 @@ import { useCommunes } from "./hooks/useCommunes"
 import { DropZone } from "./components/DropZone"
 import { DotLottieReact } from "@lottiefiles/dotlottie-react"
 import Stars from "./components/Stars"
+import Footer from "./components/Footer"
+import LoadingScreen from "./components/LoadingScreen"
 import kaguDefaite from "/kagu-defaite.png"
+import { soundClick, soundDragStart, soundDropCorrect, soundDropWrong, soundWin, soundLose } from "./utils/sounds"
 
 const provinceTotals = {
   "province Sud": 14,
@@ -13,7 +16,7 @@ const provinceTotals = {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState("home") // home, game, win, lose
+  const [screen, setScreen] = useState("loading") // loading, home, game, win, lose
   const [lives, setLives] = useState(3)
   const [dragging, setDragging] = useState(null)
   const communes = useCommunes()
@@ -28,6 +31,7 @@ export default function App() {
   const [remainingVisible, setRemainingVisible] = useState([])
   const [chrono, setChrono] = useState(60)
   const [showStars, setShowStars] = useState(false)
+  const [errorZone, setErrorZone] = useState(null)
 
   // Mettre à jour remaining quand communes change
   useEffect(() => {
@@ -63,12 +67,35 @@ export default function App() {
     }
   }, [remaining, screen, communes])
 
+  // Jouer les sons quand on gagne ou perd
+  useEffect(() => {
+    if (screen === "win") {
+      setTimeout(() => {
+        try {
+          soundWin()
+        } catch (e) {
+          console.warn('Sound error:', e)
+        }
+      }, 100)
+    } else if (screen === "lose") {
+      setTimeout(() => {
+        try {
+          soundLose()
+        } catch (e) {
+          console.warn('Sound error:', e)
+        }
+      }, 100)
+    }
+  }, [screen])
+
   function goHome() {
+    soundClick()
     setScreen("home")
     setDragging(null)
   }
 
   function startGame() {
+    soundClick()
     setScreen("game")
     setChrono(60)
     setLives(3)
@@ -81,6 +108,7 @@ export default function App() {
   }
 
   function handleItemDragStart(item, event) {
+    soundDragStart()
     if (event && event.dataTransfer) {
       event.dataTransfer.effectAllowed = "move"
       event.dataTransfer.setData("text/plain", item.nom_commune)
@@ -97,8 +125,8 @@ export default function App() {
     // Vérifier si la commune appartient à cette province
     const isCorrect = dragging.province && dragging.province[0] === province
 
-    // 2. Remplacer le bloc isCorrect dans handleDrop
     if (isCorrect) {
+      soundDropCorrect()
       const rect = event?.currentTarget?.getBoundingClientRect()
       setStarsOrigin(rect ? { x: rect.left + rect.width / 2, y: rect.bottom } : null)
 
@@ -111,10 +139,15 @@ export default function App() {
       setTimeout(() => { setShowStars(false); setStarsOrigin(null) }, 1200)
     } else {
       // Mauvaise province
+      soundDropWrong()
+      setErrorZone(province)
+      setTimeout(() => setErrorZone(null), 600)
       const newLives = lives - 1
       setLives(newLives)
       if (newLives === 0) {
-        setScreen("lose")
+        setTimeout(() => {
+          setScreen("lose")
+        }, 300)
       }
     }
 
@@ -129,10 +162,15 @@ export default function App() {
   const errors = 3 - lives
   const remainingList = remaining.slice(0, 4).map((c) => c.nom_commune).join(", ") + (remaining.length > 4 ? "..." : "")
 
+  // ÉCRAN DE CHARGEMENT
+  if (screen === "loading") {
+    return <LoadingScreen onLoadingComplete={() => setScreen("home")} />
+  }
+
   // ÉCRAN D'ACCUEIL
   if (screen === "home") {
     return (
-      <div className="screen screen-home">
+      <div className="screen screen-home fade-in">
         <div className="home-top">
           <div className="home-logo">
             <span className="black">Match</span><span className="orange">AreaNC</span>
@@ -160,10 +198,11 @@ export default function App() {
           <button className="btn btn-solo" onClick={startGame}>
             JOUER SOLO
           </button>
-          <button className="btn btn-learn">
+          <button className="btn btn-learn" onClick={() => soundClick()}>
             MODE <span className="highlight">APRENTISSAGE</span>
           </button>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -171,7 +210,7 @@ export default function App() {
   // ÉCRAN DE JEU
   if (screen === "game") {
     return (
-      <div className="screen screen-game">
+      <div className="screen screen-game fade-in">
         <header className="game-header">
           <div className="header-left">
             <button className="back-button" onClick={goHome}>←</button>
@@ -179,7 +218,7 @@ export default function App() {
           <div className="brand">MatchArea<span>NC</span></div>
           <div className="header-right">
             <button className="restart-button" onClick={startGame}>↻</button>
-            <div className="hearts">{Array(lives).fill("❤️").join("")}</div>
+            <div className="hearts">{Array(lives).fill("♥").join("")}</div>
             <div className="timer">{chrono}s</div>
           </div>
         </header>
@@ -214,6 +253,7 @@ export default function App() {
               communes={provinces[province]}
               targetCount={provinceTotals[province]}
               onDrop={handleDrop}
+              isError={errorZone === province}
             />
           ))}
         </div>
@@ -233,7 +273,7 @@ export default function App() {
             ))}
           </div>
         </div>
-
+        <Footer />
       </div>
     )
   }
@@ -241,7 +281,7 @@ export default function App() {
   // ÉCRAN DE VICTOIRE
   if (screen === "win") {
     return (
-      <div className="screen screen-win">
+      <div className="screen screen-win fade-in">
         <div className="result-card">
           <div className="result-handle" />
           <div className="result-body">
@@ -279,6 +319,7 @@ export default function App() {
             </button>
           </div>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -286,7 +327,7 @@ export default function App() {
   // ÉCRAN DE DÉFAITE
   if (screen === "lose") {
     return (
-      <div className="screen screen-lose">
+      <div className="screen screen-lose fade-in">
         <div className="result-card">
           <div className="result-handle" />
           <div className="result-body">
@@ -323,6 +364,7 @@ export default function App() {
             </button>
           </div>
         </div>
+        <Footer />
       </div>
     )
   }

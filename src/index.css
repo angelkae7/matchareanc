@@ -17,6 +17,8 @@
 html, body, #root {
   height: 100%;
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -36,6 +38,68 @@ button {
   overflow-x: hidden;
 }
 
+/* Animations et transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes errorFlash {
+  0%, 100% {
+    background-color: inherit;
+    box-shadow: inherit;
+  }
+  50% {
+    background-color: rgba(220, 50, 50, 0.3);
+    box-shadow: rgba(220, 50, 50, 0.5) 0px 4px 0px, rgba(0, 0, 0, 0.05) 0px 1px 2px;
+  }
+}
+
+.zone-error {
+  animation: errorFlash 0.6s ease-in-out;
+}
+
+/* ÉCRAN DE CHARGEMENT */
+.screen-loading {
+  background: #f5f0e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.loading-container {
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.loading-container.show {
+  opacity: 1;
+}
+
+.loading-logo {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+.loading-logo .black {
+  color: #1a1a1a;
+}
+
+.loading-logo .orange {
+  color: #e07b1a;
+}
+
 /* ÉCRAN D'ACCUEIL */
 .screen-home {
   background: #f5f0e8;
@@ -43,7 +107,6 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 24px 16px 32px;
   min-height: 100vh;
 }
 
@@ -96,7 +159,7 @@ button {
   border-radius: 16px;
   padding: 16px 20px;
   margin: 24px 28px 0;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
   position: relative;
   font-size: 14px;
   font-weight: 400;
@@ -280,6 +343,7 @@ button {
 .hearts {
   font-size: 20px;
   letter-spacing: 2px;
+  color: #e74c3c;
 }
 
 .timer {
@@ -363,8 +427,8 @@ button {
 
 .mascotte-hint > div:first-child {
   flex-shrink: 0;
-  width: 50px !important;
-  height: 50px !important;
+  width: 70px !important;
+  height: 70px !important;
   aspect-ratio: 1;
   overflow: hidden;
   display: flex;
@@ -544,6 +608,7 @@ button {
 .commune-bank {
   background: rgb(243, 238, 228);
   border-radius: 16px;
+  margin-top: 28px;
   padding: 10px;
   border: 1.5px dashed rgb(220, 213, 199);
 }
@@ -585,6 +650,11 @@ button {
   -moz-user-select: none;
   -ms-user-select: none;
   white-space: nowrap;
+}
+
+.item-chip:active,
+.item-chip.selected {
+  cursor: grabbing;
 }
 
 .item-chip.selected {
@@ -760,9 +830,45 @@ button {
   background: white;
 }
 
+/* FOOTER */
+.app-footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid #e2ddd4;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-links a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
 /* RESPONSIVE DESKTOP */
 @media (min-width: 900px) {
   .screen-game {
+    gap: 20px;
     padding: 24px;
     max-width: 1200px;
     margin: 0 auto;
@@ -778,26 +884,47 @@ button {
     height: 300px;
   }
 
+  .home-logo {
+    font-size: 36px;
+  }
+
+  .home-tagline {
+    font-size: 15px;
+  }
+
   .screen-home {
-    padding: 40px 32px 48px;
+    /* padding: 40px 32px 48px; */
     align-items: center;
   }
 
   .home-top,
   .home-bottom {
-    width: min(960px, 100%);
+    width: 100%;
+  }
+
+  .home-bottom {
+    height: 40vh;
+    border-radius: 50% 50% 0 0 / 100px 100px 0 0;
+    padding: 48px 32px 48px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: 28px;
+  }
+
+  .home-bottom .btn {
+    max-width: 320px;
   }
 
   .home-middle {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 28px;
-    margin-top: 24px;
+    /* gap: 20px; */
+    margin-top: 40px;
   }
 
   .bubble {
-    flex: 1 1 420px;
     margin: 0;
     font-size: 15px;
   }
@@ -808,17 +935,4 @@ button {
     margin-top: 0;
   }
 
-  .home-bottom {
-    padding: 40px 48px 48px;
-  }
-
-  .home-buttons {
-    flex-direction: row;
-    justify-content: center;
-    gap: 16px;
-  }
-
-  .home-buttons .btn {
-    max-width: 320px;
-  }
 }

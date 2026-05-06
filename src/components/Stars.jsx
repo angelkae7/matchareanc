@@ -10,15 +10,15 @@ function rand(min, max) {
 
 export default function Stars({ origin }) {
   const particles = useMemo(() =>
-    Array.from({ length: 20 }, (_, i) => ({
+    Array.from({ length: 15 }, (_, i) => ({
       id:       i,
-      dx:       rand(-130, 130),
-      dy:       rand(-200, -80),
-      size:     rand(14, 26),
-      delay:    rand(0, 0.2),
-      duration: rand(0.6, 1.2),
-      rotation: rand(-200, 200),
-      scale:    rand(0.2, 0.8),
+      dx:       rand(-80, 80),
+      dy:       rand(-280, -180),
+      size:     rand(16, 28),
+      delay:    rand(0, 0.15),
+      duration: rand(0.8, 1.4),
+      rotation: rand(-360, 360),
+      scale:    rand(0.3, 1),
       color:    COLORS[Math.floor(Math.random() * COLORS.length)],
       char:     CHARS[Math.floor(Math.random() * CHARS.length)],
     }))
@@ -33,7 +33,7 @@ export default function Stars({ origin }) {
         left: origin.x,
         top: origin.y,
         pointerEvents: "none",
-        zIndex: 9999,
+        zIndex: 100,
       }}
     >
       {particles.map((p) => (

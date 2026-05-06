@@ -6,7 +6,6 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react"
 import Stars from "./components/Stars"
 import Footer from "./components/Footer"
 import LoadingScreen from "./components/LoadingScreen"
-import kaguDefaite from "/kagu-defaite.png"
 import { soundClick, soundDragStart, soundDropCorrect, soundDropWrong, soundWin, soundLose } from "./utils/sounds"
 
 const provinceTotals = {
@@ -222,7 +221,7 @@ export default function App() {
             <div className="timer">{chrono}s</div>
           </div>
         </header>
-
+        <div className="game-container">
         <div className="progress-section">
           <div className="progress-label">PROGRESSION</div>
           <div className="progress-bar">
@@ -272,6 +271,7 @@ export default function App() {
               />
             ))}
           </div>
+        </div>
         </div>
         <Footer />
       </div>
@@ -332,7 +332,12 @@ export default function App() {
           <div className="result-handle" />
           <div className="result-body">
             <div className="mascotte-big result-mascotte">
-              <img src={kaguDefaite} alt="Kagu défaite" />
+                            <DotLottieReact
+                src="/kagu-defaite.lottie"
+                loop
+                autoplay
+                width={160}
+              />
             </div>
             <h1 className="result-title">
               {lives === 0 ? "VIES ÉPUISÉES" : "TEMPS ÉCOULÉ"}

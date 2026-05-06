@@ -69,7 +69,7 @@ button {
 
 /* ÉCRAN DE CHARGEMENT */
 .screen-loading {
-  background: #f5f0e8;
+  background: #DEDEE3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,18 +86,39 @@ button {
 }
 
 .loading-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-container.show .black {
+  color: #1a1a1a;
+}
+
+.loading-title {
+  /* flex-direction: column; */
+  display: inline-flex;
   font-size: 48px;
   font-weight: 900;
   letter-spacing: -1px;
   text-align: center;
 }
 
-.loading-logo .black {
-  color: #1a1a1a;
+.loading-author {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
 }
 
-.loading-logo .orange {
+.loading-title .orange {
   color: #e07b1a;
+}
+
+.loading-logo img {
+  width: 320px;
+  height: auto;
+  margin-bottom: 12px;
 }
 
 /* ÉCRAN D'ACCUEIL */

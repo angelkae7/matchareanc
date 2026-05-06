@@ -23,8 +23,13 @@ export default function LoadingScreen({ onLoadingComplete }) {
   return (
     <div className="screen screen-loading">
       <div className={`loading-container ${showContent ? 'show' : ''}`}>
+        
         <div className="loading-logo">
-          <span className="black">Match</span><span className="orange">AreaNC</span>
+          <img src="/kagu-logo.svg" alt="logo MatchAreaNC" />
+          <div className="loading-title">
+            <span className="black">Match</span><span className="orange">AreaNC</span>
+          </div>
+          <span className="loading-author" >Kagu by angelkael © 2026</span>
         </div>
       </div>
     </div>

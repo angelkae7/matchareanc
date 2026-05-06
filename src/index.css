@@ -1028,3 +1028,10 @@ button {
     padding: 8px 12px;
   }
 }
+
+/* DESKTOP */
+@media (min-width: 900px) {
+  body {
+    padding-bottom: 80px;
+  }
+}

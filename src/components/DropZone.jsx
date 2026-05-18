@@ -20,7 +20,6 @@ export function DropZone({ province, communes, targetCount, onDrop, isError }) {
 
   return (
     <div
-      ref={zoneRef}
       className={`drop-zone ${colorClass}`}
       onDrop={(e) => {
         e.preventDefault()
@@ -34,6 +33,9 @@ export function DropZone({ province, communes, targetCount, onDrop, isError }) {
     >
       <div className="zone-header">
         <h3>{province.toUpperCase()}</h3>
+      </div>
+      <div  ref={zoneRef} className="zone-drop">
+      <div className="commune-length">
         <span>{communes.length}/{targetCount}</span>
       </div>
       <div className="zone-content">
@@ -46,6 +48,7 @@ export function DropZone({ province, communes, targetCount, onDrop, isError }) {
             </span>
           ))
         )}
+      </div>
       </div>
     </div>
   )

@@ -52,7 +52,7 @@ export default function App() {
 
   // Afficher 7 communes visibles
   useEffect(() => {
-    setRemainingVisible(remaining.slice(0, 5))
+    setRemainingVisible(remaining.slice(0, 4))
   }, [remaining])
 
   // Vérifier la victoire
@@ -195,11 +195,11 @@ export default function App() {
 
         <div className="home-bottom">
           <button className="btn btn-solo" onClick={startGame}>
-            JOUER SOLO
+            JOUER
           </button>
-          <button className="btn btn-learn" onClick={() => soundClick()}>
+          {/* <button className="btn btn-learn" onClick={() => soundClick()}>
             MODE <span className="highlight">APRENTISSAGE</span>
-          </button>
+          </button> */}
         </div>
         <Footer />
       </div>
@@ -216,9 +216,8 @@ export default function App() {
           </div>
           <div className="brand">MatchArea<span>NC</span></div>
           <div className="header-right">
-            <button className="restart-button" onClick={startGame}>↻</button>
             <div className="hearts">{Array(lives).fill("♥").join("")}</div>
-            <div className="timer">{chrono}s</div>
+            <button className="restart-button" onClick={startGame}>↻</button>
           </div>
         </header>
         <div className="game-container">
@@ -231,17 +230,18 @@ export default function App() {
         </div>
 
         <div className="mascotte-hint">
+             <div className="timer">{chrono}s</div>
+           <div className="hint-text">
+            {dragging
+              ? `Commune sélectionnée : ${dragging.nom_commune}. Touchez une province.`
+              : 'Touchez une commune, puis une province pour la déposer.'}
+          </div>
           <DotLottieReact
             src="/kagu-hi.lottie"
             loop
             autoplay
             width={50}
           />
-          <div className="hint-text">
-            {dragging
-              ? `Commune sélectionnée : ${dragging.nom_commune}. Touchez une province.`
-              : 'Touchez une commune, puis une province pour la déposer.'}
-          </div>
         </div>
 
         <div className="provinces-grid">

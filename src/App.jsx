@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { ItemCard } from "./components/ItemCard"
 import { useCommunes } from "./hooks/useCommunes"
 import { DropZone } from "./components/DropZone"
@@ -31,6 +31,12 @@ export default function App() {
   const [chrono, setChrono] = useState(60)
   const [showStars, setShowStars] = useState(false)
   const [errorZone, setErrorZone] = useState(null)
+
+  const draggingRef = useRef(null)
+  const ghostRef = useRef(null)
+  const touchOriginRef = useRef(null)
+  const hoveredZoneRef = useRef(null)
+  const handleDropRef = useRef(null)
 
   // Mettre à jour remaining quand communes change
   useEffect(() => {
@@ -112,46 +118,127 @@ export default function App() {
       event.dataTransfer.effectAllowed = "move"
       event.dataTransfer.setData("text/plain", item.nom_commune)
     }
+    draggingRef.current = item
     setDragging(item)
   }
 
-  function handleDrop(province, event) {
-    if (event) {
-      event.preventDefault()
-    }
-    if (!dragging) return
+  function handleTouchDragStart(item, e) {
+    const touch = e.touches[0]
+    touchOriginRef.current = { x: touch.clientX, y: touch.clientY, item }
+  }
 
-    // Vérifier si la commune appartient à cette province
-    const isCorrect = dragging.province && dragging.province[0] === province
+  function handleDrop(province, event) {
+    if (event) event.preventDefault()
+    const item = draggingRef.current
+    if (!item) return
+
+    draggingRef.current = null
+    setDragging(null)
+
+    const isCorrect = item.province && item.province[0] === province
 
     if (isCorrect) {
       soundDropCorrect()
-      const rect = event?.currentTarget?.getBoundingClientRect()
+      const rect = event?.currentTarget?.getBoundingClientRect?.()
       setStarsOrigin(rect ? { x: rect.left + rect.width / 2, y: rect.bottom } : null)
-
-      setProvinces((prev) => ({
-        ...prev,
-        [province]: [dragging, ...prev[province]],
-      }))
-      setRemaining((prev) => prev.filter((item) => item.nom_commune !== dragging.nom_commune))
+      setProvinces((prev) => ({ ...prev, [province]: [item, ...prev[province]] }))
+      setRemaining((prev) => prev.filter((c) => c.nom_commune !== item.nom_commune))
       setShowStars(true)
       setTimeout(() => { setShowStars(false); setStarsOrigin(null) }, 1200)
     } else {
-      // Mauvaise province
       soundDropWrong()
       setErrorZone(province)
       setTimeout(() => setErrorZone(null), 600)
-      const newLives = lives - 1
-      setLives(newLives)
-      if (newLives === 0) {
-        setTimeout(() => {
-          setScreen("lose")
-        }, 300)
+      setLives((prev) => {
+        if (prev === 1) setTimeout(() => setScreen("lose"), 300)
+        return prev - 1
+      })
+    }
+  }
+
+  handleDropRef.current = handleDrop
+
+  useEffect(() => {
+    function onTouchMove(e) {
+      const origin = touchOriginRef.current
+      if (!origin) return
+
+      const touch = e.touches[0]
+      const dx = touch.clientX - origin.x
+      const dy = touch.clientY - origin.y
+
+      if (!ghostRef.current && Math.hypot(dx, dy) > 8) {
+        soundDragStart()
+        draggingRef.current = origin.item
+        setDragging(origin.item)
+
+        const ghost = document.createElement("div")
+        ghost.className = "item-chip selected touch-ghost"
+        ghost.textContent = origin.item.nom_commune
+        ghost.style.cssText = `position:fixed;left:${touch.clientX}px;top:${touch.clientY}px;pointer-events:none;z-index:9999;`
+        document.body.appendChild(ghost)
+        ghostRef.current = ghost
+      }
+
+      if (ghostRef.current) {
+        e.preventDefault()
+        ghostRef.current.style.left = `${touch.clientX}px`
+        ghostRef.current.style.top = `${touch.clientY}px`
+
+        const el = document.elementFromPoint(touch.clientX, touch.clientY)
+        const zoneEl = el?.closest("[data-province]")
+        if (zoneEl !== hoveredZoneRef.current) {
+          hoveredZoneRef.current?.classList.remove("drop-zone-hover")
+          zoneEl?.classList.add("drop-zone-hover")
+          hoveredZoneRef.current = zoneEl
+        }
       }
     }
 
-    setDragging(null)
-  }
+    function onTouchEnd(e) {
+      touchOriginRef.current = null
+      hoveredZoneRef.current?.classList.remove("drop-zone-hover")
+      hoveredZoneRef.current = null
+
+      if (!ghostRef.current) return
+
+      ghostRef.current.remove()
+      ghostRef.current = null
+
+      const touch = e.changedTouches[0]
+      const el = document.elementFromPoint(touch.clientX, touch.clientY)
+      const zoneEl = el?.closest("[data-province]")
+
+      if (zoneEl && draggingRef.current) {
+        handleDropRef.current(zoneEl.dataset.province, { preventDefault: () => {}, currentTarget: zoneEl })
+      } else {
+        draggingRef.current = null
+        setDragging(null)
+      }
+    }
+
+    function onTouchCancel() {
+      touchOriginRef.current = null
+      hoveredZoneRef.current?.classList.remove("drop-zone-hover")
+      hoveredZoneRef.current = null
+      if (ghostRef.current) {
+        ghostRef.current.remove()
+        ghostRef.current = null
+      }
+      draggingRef.current = null
+      setDragging(null)
+    }
+
+    document.addEventListener("touchmove", onTouchMove, { passive: false })
+    document.addEventListener("touchend", onTouchEnd)
+    document.addEventListener("touchcancel", onTouchCancel)
+
+    return () => {
+      document.removeEventListener("touchmove", onTouchMove)
+      document.removeEventListener("touchend", onTouchEnd)
+      document.removeEventListener("touchcancel", onTouchCancel)
+    }
+  }, [])
 
   const totalCount = communes.length
   const placedCount = totalCount - remaining.length
@@ -267,6 +354,7 @@ export default function App() {
                 key={item.nom_commune}
                 item={item}
                 onDragStart={handleItemDragStart}
+                onTouchStart={handleTouchDragStart}
                 isSelected={dragging?.nom_commune === item.nom_commune}
               />
             ))}

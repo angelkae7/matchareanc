@@ -21,14 +21,13 @@ export function DropZone({ province, communes, targetCount, onDrop, isError }) {
   return (
     <div
       className={`drop-zone ${colorClass}`}
+      data-province={province}
       onDrop={(e) => {
         e.preventDefault()
         onDrop(province, e)
       }}
       onDragOver={(e) => e.preventDefault()}
       onDragEnter={(e) => e.preventDefault()}
-      onPointerUp={(e) => onDrop(province, e)}
-      onTouchEnd={(e) => onDrop(province, e)}
       onClick={() => onDrop(province)}
     >
       <div className="zone-header">

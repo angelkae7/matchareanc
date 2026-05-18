@@ -69,6 +69,29 @@ button {
   animation: errorFlash 0.6s ease-in-out;
 }
 
+.touch-ghost {
+  transform: translate(-50%, -60%) rotate(-3deg) scale(1.1) !important;
+  transition: none !important;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+.drop-zone-hover {
+  transform: scale(1.025);
+}
+
+.drop-zone-hover.zone-nord {
+  box-shadow: rgb(79, 138, 38) 0px 6px 0px, rgba(124, 192, 67, 0.35) 0px 0px 0px 3px;
+}
+
+.drop-zone-hover.zone-sud {
+  box-shadow: rgb(168, 84, 26) 0px 6px 0px, rgba(221, 122, 44, 0.35) 0px 0px 0px 3px;
+}
+
+.drop-zone-hover.zone-iles {
+  box-shadow: rgb(14, 120, 145) 0px 6px 0px, rgba(26, 163, 200, 0.35) 0px 0px 0px 3px;
+}
+
 /* ÉCRAN DE CHARGEMENT */
 .screen-loading {
   background: #DEDEE3;
